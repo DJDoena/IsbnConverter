@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net452;netcoreapp3.1;net5.0;net6.0;</TargetFrameworks>
+    <AssemblyName>DoenaSoft.IsbnConverter</AssemblyName>
+    <RootNamespace>DoenaSoft.IsbnConverter</RootNamespace>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <Authors>DJ Doena</Authors>
+    <Company>Doena Soft.</Company>
+    <Product>ISBN to EAN Converter</Product>
+    <Description>Converts the 10-digit ISBN into a "book land" EAN and vice versa.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Copyright>2004 - 2022</Copyright>
+    <PackageProjectUrl>https://github.com/DJDoena/IsbnConverter</PackageProjectUrl>
+    <PackageIcon>djdsoft.png</PackageIcon>
+    <PackageIconUrl />
+    <RepositoryUrl>https://github.com/DJDoena/IsbnConverter</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>ISBN;EAN</PackageTags>
+    <Version>1.0.0</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="djdsoft.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>
