@@ -51,7 +51,7 @@
 
             var checksum = Helper.CalculateEanChecksum(eanDigits).ToString();
 
-            var isValid = ean[Constants.IsbnChecksumIndex] == checksum[0];
+            var isValid = ean[Constants.EanChecksumIndex].ToString() == checksum;
 
             return isValid;
         }
