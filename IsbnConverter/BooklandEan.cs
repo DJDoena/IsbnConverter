@@ -15,9 +15,9 @@
         {
             BaseCheck(ean);
 
-            var eanDigits = Calculate(ean.ToCharArray());
+            var isbnDigits = CalculateIsbnDigits(ean.ToCharArray());
 
-            var isbn = Assemble(eanDigits);
+            var isbn = AssembleIsbn(isbnDigits);
 
             return isbn;
         }
@@ -29,32 +29,24 @@
         {
             base.BaseCheck(ean);
 
-            if (ean[0] != '9')
-            {
-                throw new ArgumentException("EAN doesn't start with 9!", nameof(ean));
-            }
-            else if (ean[1] != '7')
-            {
-                throw new ArgumentException("EAN doesn't start with 97!", nameof(ean));
-            }
-            else if (ean[2] != '8')
+            if (ean[0] != '9' || ean[1] != '7' || ean[2] != '8')
             {
                 throw new ArgumentException("EAN doesn't start with 978!", nameof(ean));
             }
         }
 
-        private static byte[] Calculate(char[] eanDigits)
+        private static byte[] CalculateIsbnDigits(char[] eanDigits)
         {
             var isbnDigits = new byte[Constants.IsbnFullLength];
 
             Helper.CopyDigits(eanDigits, isbnDigits, Constants.IsbnLowerBound, Constants.EanLowerBoundWithoutPrefix, Constants.EanUpperBound);
 
-            isbnDigits[Constants.IsbnChecksumIndex] = Helper.CalculateIsbnChecksum(isbnDigits);
+            isbnDigits[Constants.IsbnChecksumIndex] = Isbn.CalculateChecksum(isbnDigits);
 
             return isbnDigits;
         }
 
-        private static string Assemble(byte[] isbnDigits)
+        private static string AssembleIsbn(byte[] isbnDigits)
         {
             var isbn = new StringBuilder();
 
