@@ -66,7 +66,7 @@
 
             var checksum = Helper.CalculateIsbnChecksum(isbnDigits).ToString();
 
-            var isValid = isbn[Constants.IsbnChecksumIndex].ToString().ToUpper() != checksum.ToUpper();
+            var isValid = isbn[Constants.IsbnChecksumIndex].ToString().ToUpper() == checksum.ToUpper();
 
             return isValid;
         }

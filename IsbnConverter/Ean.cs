@@ -3,25 +3,10 @@
     using System;
     using System.IO;
     using System.Linq;
-    using System.Text;
 
-/// <summary />
-    public class Ean : IConvert, IChecksum
+    /// <summary />
+    public class Ean : IChecksum
     {
-        /// <summary>
-        /// Converts EAN to ISBN.
-        /// </summary>
-        public string Convert(string ean)
-        {
-            BaseCheck(ean);
-
-            var eanDigits = Calculate(ean.ToCharArray());
-
-            var isbn = Assemble(eanDigits);
-
-            return isbn;
-        }
-
         /// <summary>
         /// Calculates the EAN checksum.
         /// </summary>
@@ -91,35 +76,6 @@
             {
                 throw new ArgumentException("EAN contains invalid character!");
             }
-        }
-
-        private static byte[] Calculate(char[] eanDigits)
-        {
-            var isbnDigits = new byte[Constants.IsbnFullLength];
-
-            Helper.CopyDigits(eanDigits, isbnDigits, Constants.IsbnLowerBound, Constants.EanLowerBoundWithoutPrefix, Constants.EanUpperBound);
-
-            isbnDigits[Constants.IsbnChecksumIndex] = Helper.CalculateIsbnChecksum(isbnDigits);
-
-            return isbnDigits;
-        }
-
-        private static string Assemble(byte[] isbnDigits)
-        {
-            var isbn = new StringBuilder();
-
-            for (var isbnIndex = Constants.IsbnLowerBound; isbnIndex <= Constants.IsbnUpperBound; isbnIndex++)
-            {
-                isbn.Append(isbnDigits[isbnIndex]);
-            }
-
-            var checksum = isbnDigits[Constants.IsbnChecksumIndex];
-
-            isbn.Append((checksum == 10)
-                ? "X"
-                : checksum.ToString());
-
-            return isbn.ToString();
         }
     }
 }
