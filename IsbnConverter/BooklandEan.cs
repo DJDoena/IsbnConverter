@@ -37,11 +37,11 @@
 
         private static byte[] CalculateIsbnDigits(char[] eanDigits)
         {
-            var isbnDigits = new byte[Constants.IsbnFullLength];
+            var isbnDigits = new byte[Isbn.FullLength];
 
-            Helper.CopyDigits(eanDigits, isbnDigits, Constants.IsbnLowerBound, Constants.EanLowerBoundWithoutPrefix, Constants.EanUpperBound);
+            Helper.CopyDigits(eanDigits, isbnDigits, Isbn.LowerBound, LowerBoundWithoutPrefix, UpperBound);
 
-            isbnDigits[Constants.IsbnChecksumIndex] = Isbn.CalculateChecksum(isbnDigits);
+            isbnDigits[Isbn.ChecksumIndex] = Isbn.CalculateChecksum(isbnDigits);
 
             return isbnDigits;
         }
@@ -50,15 +50,15 @@
         {
             var isbn = new StringBuilder();
 
-            for (var isbnIndex = Constants.IsbnLowerBound; isbnIndex <= Constants.IsbnUpperBound; isbnIndex++)
+            for (var isbnIndex = Isbn.LowerBound; isbnIndex <= Isbn.UpperBound; isbnIndex++)
             {
                 isbn.Append(isbnDigits[isbnIndex]);
             }
 
-            var checksum = isbnDigits[Constants.IsbnChecksumIndex];
+            var checksum = isbnDigits[Isbn.ChecksumIndex];
 
-            isbn.Append((checksum == 10)
-                ? "X"
+            isbn.Append(checksum == 10
+                ? Isbn.CheckDigitX
                 : checksum.ToString());
 
             return isbn.ToString();

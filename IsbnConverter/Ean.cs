@@ -3,10 +3,21 @@
     using System;
     using System.IO;
     using System.Linq;
+    using System.Text;
 
     /// <summary />
     public class Ean : IChecksum
     {
+        internal const byte LowerBound = 0;
+        
+        internal const byte LowerBoundWithoutPrefix = 3;
+
+        internal const byte UpperBound = 11;
+        
+        internal const byte ChecksumIndex = UpperBound + 1;
+        
+        internal const byte FullLength = ChecksumIndex + 1;
+
         /// <summary>
         /// Calculates the EAN checksum.
         /// </summary>
@@ -17,17 +28,17 @@
         {
             BaseCheck(ean);
 
-            var eanDigits = new byte[Constants.EanFullLength];
+            var eanDigits = new byte[FullLength];
 
-            Helper.CopyDigits(ean.ToCharArray(), eanDigits, Constants.EanLowerBound, Constants.EanLowerBound, Constants.EanChecksumIndex - 1);
+            Helper.CopyDigits(ean.ToCharArray(), eanDigits, LowerBound, LowerBound, ChecksumIndex - 1);
 
             var checksum = CalculateChecksum(eanDigits).ToString();
 
             if (throwOnError
-                && ean.Length == Constants.EanFullLength
+                && ean.Length == FullLength
                 && !IsValid(ean, checksum))
             {
-                throw new InvalidDataException($"Given checksum is {ean[Constants.EanChecksumIndex]} when it should be {checksum}!");
+                throw new InvalidDataException($"Given checksum is {ean[ChecksumIndex]} when it should be {checksum}!");
             }
 
             return checksum;
@@ -40,14 +51,14 @@
         {
             BaseCheck(ean);
 
-            if (ean.Length != Constants.EanFullLength)
+            if (ean.Length != FullLength)
             {
-                throw new ArgumentException($"EAN doesn't have correct length ({Constants.EanFullLength})!", nameof(ean));
+                throw new ArgumentException($"EAN doesn't have correct length ({FullLength})!", nameof(ean));
             }
 
-            var eanDigits = new byte[Constants.EanFullLength];
+            var eanDigits = new byte[FullLength];
 
-            Helper.CopyDigits(ean.ToCharArray(), eanDigits, Constants.EanLowerBound, Constants.EanLowerBound, Constants.EanChecksumIndex - 1);
+            Helper.CopyDigits(ean.ToCharArray(), eanDigits, LowerBound, LowerBound, ChecksumIndex - 1);
 
             var checksum = CalculateChecksum(eanDigits).ToString();
 
@@ -84,17 +95,10 @@
             {
                 throw new ArgumentNullException(nameof(ean));
             }
-            else if (ean.Length != Constants.EanFullLength)
-            {
-                if (ean.Length != Constants.EanFullLength - 1)
-                {
-                    throw new ArgumentException($"EAN doesn't have correct length ({Constants.EanFullLength})!", nameof(ean));
-                }
-            }
-            else if (ean.Any(d => d < '0' || d > '9'))
-            {
-                throw new ArgumentException("EAN contains invalid character!");
-            }
+
+            var bytes = Encoding.ASCII.GetBytes(ean);
+
+            CheckDigits(bytes);
         }
 
         private static void CheckDigits(byte[] eanDigits)
@@ -103,11 +107,11 @@
             {
                 throw new ArgumentNullException(nameof(eanDigits));
             }
-            else if (eanDigits.Length != Constants.EanFullLength)
+            else if (eanDigits.Length != FullLength)
             {
-                if (eanDigits.Length != Constants.EanFullLength - 1)
+                if (eanDigits.Length != FullLength - 1)
                 {
-                    throw new ArgumentException($"EAN doesn't have correct length ({Constants.IsbnFullLength})!", nameof(eanDigits));
+                    throw new ArgumentException($"EAN doesn't have correct length ({Isbn.FullLength})!", nameof(eanDigits));
                 }
             }
             else if (eanDigits.Any(d => d < 0 || d > 9))
@@ -120,7 +124,7 @@
         {
             var sum = 0;
 
-            for (var eanIndex = lowerBound; eanIndex <= Constants.EanUpperBound; eanIndex += 2)
+            for (var eanIndex = lowerBound; eanIndex <= UpperBound; eanIndex += 2)
             {
                 sum += ean[eanIndex];
             }
@@ -129,6 +133,6 @@
         }
 
         private static bool IsValid(string ean, string checksum)
-            => ean[Constants.EanChecksumIndex].ToString() == checksum;
+            => ean[ChecksumIndex].ToString() == checksum;
     }
 }

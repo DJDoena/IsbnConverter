@@ -8,6 +8,16 @@
     /// <summary />
     public sealed class Isbn : IConvert, IChecksum
     {
+        internal const byte LowerBound = 0;
+
+        internal const byte UpperBound = 8;
+
+        internal const byte ChecksumIndex = UpperBound + 1;
+
+        internal const byte FullLength = ChecksumIndex + 1;
+
+        internal const string CheckDigitX = "X";
+
         /// <summary>
         /// Converts ISBN to EAN.
         /// </summary>
@@ -32,17 +42,17 @@
         {
             BaseCheck(isbn);
 
-            var isbnDigits = new byte[Constants.IsbnFullLength];
+            var isbnDigits = new byte[FullLength];
 
-            Helper.CopyDigits(isbn.ToCharArray(), isbnDigits, Constants.IsbnLowerBound, Constants.IsbnLowerBound, Constants.IsbnChecksumIndex - 1);
+            Helper.CopyDigits(isbn.ToCharArray(), isbnDigits, LowerBound, LowerBound, ChecksumIndex - 1);
 
             var checksum = CalculateChecksum(isbnDigits).ToString();
 
             if (throwOnError
-                && isbn.Length == Constants.IsbnFullLength
+                && isbn.Length == FullLength
                 && !IsValid(isbn, checksum))
             {
-                throw new InvalidDataException($"Given checksum is {isbn[Constants.IsbnChecksumIndex]} when it should be {checksum}!");
+                throw new InvalidDataException($"Given checksum is {isbn[ChecksumIndex]} when it should be {checksum}!");
             }
 
             return checksum;
@@ -55,14 +65,14 @@
         {
             BaseCheck(isbn);
 
-            if (isbn.Length != Constants.IsbnFullLength)
+            if (isbn.Length != FullLength)
             {
-                throw new ArgumentException($"ISBN doesn't have correct length ({Constants.IsbnFullLength})!", nameof(isbn));
+                throw new ArgumentException($"ISBN doesn't have correct length ({FullLength})!", nameof(isbn));
             }
 
-            var isbnDigits = new byte[Constants.IsbnFullLength];
+            var isbnDigits = new byte[FullLength];
 
-            Helper.CopyDigits(isbn.ToCharArray(), isbnDigits, Constants.IsbnLowerBound, Constants.IsbnLowerBound, Constants.IsbnChecksumIndex - 1);
+            Helper.CopyDigits(isbn.ToCharArray(), isbnDigits, LowerBound, LowerBound, ChecksumIndex - 1);
 
             var checksum = CalculateChecksum(isbnDigits).ToString();
 
@@ -81,7 +91,7 @@
 
             var checksum = 0;
 
-            for (var isbnIndex = Constants.IsbnLowerBound; isbnIndex <= Constants.IsbnUpperBound; isbnIndex++)
+            for (var isbnIndex = LowerBound; isbnIndex <= UpperBound; isbnIndex++)
             {
                 checksum += isbnDigits[isbnIndex] * (isbnIndex + 1);
             }
@@ -97,16 +107,16 @@
             {
                 throw new ArgumentNullException(nameof(isbnDigits));
             }
-            else if (isbnDigits.Length != Constants.IsbnFullLength)
+            else if (isbnDigits.Length != FullLength)
             {
-                if (isbnDigits.Length != Constants.IsbnFullLength - 1)
+                if (isbnDigits.Length != FullLength - 1)
                 {
-                    throw new ArgumentException($"ISBN doesn't have correct length ({Constants.IsbnFullLength})!", nameof(isbnDigits));
+                    throw new ArgumentException($"ISBN doesn't have correct length ({FullLength})!", nameof(isbnDigits));
                 }
             }
             else if (isbnDigits.Any(d => d < 0 || d > 9))
             {
-                for (var isbnIndex = Constants.IsbnLowerBound; isbnIndex <= Constants.IsbnUpperBound; isbnIndex++)
+                for (var isbnIndex = LowerBound; isbnIndex <= UpperBound; isbnIndex++)
                 {
                     if (isbnDigits[isbnIndex] < 0 || isbnDigits[isbnIndex] > 9)
                     {
@@ -114,9 +124,9 @@
                     }
                 }
 
-                if (isbnDigits.Length == Constants.IsbnFullLength)
+                if (isbnDigits.Length == FullLength)
                 {
-                    if (isbnDigits[Constants.IsbnChecksumIndex].ToString().ToUpper() != "X")
+                    if (isbnDigits[ChecksumIndex].ToString().ToUpper() != CheckDigitX)
                     {
                         throw new ArgumentException("ISBN contains invalid character!");
                     }
@@ -130,45 +140,24 @@
             {
                 throw new ArgumentNullException(nameof(isbn));
             }
-            else if (isbn.Length != Constants.IsbnFullLength)
-            {
-                if (isbn.Length != Constants.IsbnFullLength - 1)
-                {
-                    throw new ArgumentException($"ISBN doesn't have correct length ({Constants.IsbnFullLength})!", nameof(isbn));
-                }
-            }
-            else if (isbn.Any(d => d < '0' || d > '9'))
-            {
-                for (var isbnIndex = Constants.IsbnLowerBound; isbnIndex <= Constants.IsbnUpperBound; isbnIndex++)
-                {
-                    if (isbn[isbnIndex] < '0' || isbn[isbnIndex] > '9')
-                    {
-                        throw new ArgumentException("ISBN contains invalid character!");
-                    }
-                }
 
-                if (isbn.Length == Constants.IsbnFullLength)
-                {
-                    if (isbn[Constants.IsbnChecksumIndex].ToString().ToUpper() != "X")
-                    {
-                        throw new ArgumentException("ISBN contains invalid character!");
-                    }
-                }
-            }
+            var bytes = Encoding.ASCII.GetBytes(isbn);
+
+            CheckDigits(bytes);
         }
 
         private static byte[] ConvertToEanDigits(char[] isbnDigits)
         {
-            var eanDigits = new byte[Constants.EanFullLength];
+            var eanDigits = new byte[Ean.FullLength];
 
-            Helper.CopyDigits(isbnDigits, eanDigits, Constants.EanLowerBoundWithoutPrefix, Constants.IsbnLowerBound, Constants.IsbnUpperBound);
+            Helper.CopyDigits(isbnDigits, eanDigits, Ean.LowerBoundWithoutPrefix, LowerBound, UpperBound);
 
             //"Bookland" prefix
             eanDigits[0] = 9;
             eanDigits[1] = 7;
             eanDigits[2] = 8;
 
-            eanDigits[Constants.EanChecksumIndex] = Ean.CalculateChecksum(eanDigits);
+            eanDigits[Ean.ChecksumIndex] = Ean.CalculateChecksum(eanDigits);
 
             return eanDigits;
         }
@@ -186,6 +175,6 @@
         }
 
         private static bool IsValid(string isbn, string checksum)
-            => isbn[Constants.IsbnChecksumIndex].ToString().ToUpper() == checksum.ToUpper();
+            => isbn[ChecksumIndex].ToString().ToUpper() == checksum.ToUpper();
     }
 }
