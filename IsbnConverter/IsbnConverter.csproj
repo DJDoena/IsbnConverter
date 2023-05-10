@@ -11,17 +11,17 @@
     <Product>ISBN to EAN Converter</Product>
     <Description>Converts the 10-digit ISBN into a "book land" EAN and vice versa.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Copyright>2004 - 2022</Copyright>
+    <Copyright>2004 - 2023</Copyright>
     <PackageProjectUrl>https://github.com/DJDoena/IsbnConverter</PackageProjectUrl>
     <PackageIcon>djdsoft.png</PackageIcon>
     <PackageIconUrl />
     <RepositoryUrl>https://github.com/DJDoena/IsbnConverter</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>ISBN;EAN</PackageTags>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <FileVersion>1.0.2.0</FileVersion>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
 
